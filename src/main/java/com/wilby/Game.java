@@ -1,10 +1,9 @@
 package com.wilby;
 
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
-import com.wilby.display.Display;
 import com.wilby.display.Window;
+import com.wilby.model.Mesh;
 
 public class Game implements IGame
 {
@@ -55,7 +54,7 @@ public class Game implements IGame
 	@Override
 	public void update() 
 	{
-		System.out.println("argh");
+		
 	}
 
 	@Override

@@ -1,7 +1,8 @@
 package com.wilby.util;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileReader;
 
 public class ResourceLocation 
 {
@@ -30,7 +31,7 @@ public class ResourceLocation
 	
 	private String resourceLocation(String n)
 	{
-		String l = "/src/main/resources/";
+		String l = "src/main/resources/";
 		
 		return l + n;
 	}
@@ -42,11 +43,21 @@ public class ResourceLocation
 		return new ResourceLocation(f);
 	}
 	
-	public ResourceLocation shader(String location)
+	public String loadShader(String shader) throws Exception
 	{
-		String f = resourceLocation("com/wilby/shaders/") + location;
+		String f = resourceLocation("com/wilby/shaders/") + shader;
 		
-		return new ResourceLocation(f);	
+		StringBuilder src = new StringBuilder();
+		
+		BufferedReader br = new BufferedReader(new FileReader(f));
+		
+		String line;
+		while((line = br.readLine()) != null)
+		{
+			src.append(line).append("\n");
+		}
+		
+		return src.toString();	
 	}
 	
 }

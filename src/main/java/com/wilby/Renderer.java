@@ -1,17 +1,14 @@
 package com.wilby;
 
-import java.io.File;
-import java.nio.FloatBuffer;
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryUtil;
 
 import com.wilby.display.Display;
 import com.wilby.display.Window;
+import com.wilby.model.Mesh;
 import com.wilby.model.ShaderProgram;
 import com.wilby.util.ResourceLocation;
 
@@ -19,11 +16,30 @@ public class Renderer
 {
 	
 	private static ShaderProgram shaderProgram;
-	private static String vertexShaderLocation = new ResourceLocation().shader("vertex.vs").getPath();
-	private static String fragmentShaderLocation = new ResourceLocation().shader("fragment.fs").getPath();
+	private static String vertexShaderLocation;
+	private static String fragmentShaderLocation;
 	
-	private static int vaoId;
-	private static int vboId;
+	Mesh mesh;
+	
+	float[] positions = new float[]{
+	        -0.5f,  0.5f, 0.0f,
+	        -0.5f, -0.5f, 0.0f,
+	         0.5f,  0.5f, 0.0f,
+	         0.5f,  0.5f, 0.0f,
+	        -0.5f, -0.5f, 0.0f,
+	         0.5f, -0.5f, 0.0f,
+	    };
+	
+	int[] indices = new int[]{
+	        0, 1, 3, 3, 1, 2,
+	    };
+	
+	float[] colours = new float[]{
+		    0.5f, 0.0f, 0.0f,
+		    0.0f, 0.5f, 0.0f,
+		    0.0f, 0.0f, 0.5f,
+		    0.0f, 0.5f, 0.5f,
+		};
 	
 	public void render(Window window)
 	{
@@ -36,10 +52,11 @@ public class Renderer
 		
 		shaderProgram.bind();
 		
-		GL30.glBindVertexArray(vaoId);
+		GL30.glBindVertexArray(mesh.getVaoId());
 		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
 		
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
+		GL11.glDrawElements(GL11.GL_TRIANGLES, mesh.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
@@ -57,41 +74,14 @@ public class Renderer
 
 	public void initialise() throws Exception
 	{
+		mesh = new Mesh(positions, indices, colours);
+		vertexShaderLocation = new ResourceLocation().loadShader("/vertex.vs");
+		fragmentShaderLocation = new ResourceLocation().loadShader("/fragment.fs");
 		
 		shaderProgram = new ShaderProgram();
 		shaderProgram.createVertexShader(vertexShaderLocation);
 		shaderProgram.createFragmentShader(fragmentShaderLocation);
 		shaderProgram.link();
-		
-
-		float[] vertices = new float[]{
-			     0.0f,  0.5f, 0.0f,
-			    -0.5f, -0.5f, 0.0f,
-			     0.5f, -0.5f, 0.0f
-			};
-		
-		FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
-		verticesBuffer.put(vertices).flip();
-		
-		vaoId = GL30.glGenVertexArrays();
-		
-		GL30.glBindVertexArray(vaoId);
-		
-		vboId = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verticesBuffer, GL15.GL_STATIC_DRAW);
-		MemoryUtil.memFree(verticesBuffer);
-		
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		
-		GL30.glBindVertexArray(0);
-		
-		if(verticesBuffer != null)
-		{
-			MemoryUtil.memFree(verticesBuffer);
-		}
 		
 	}
 	
@@ -102,12 +92,5 @@ public class Renderer
 			shaderProgram.cleanup();
 		}
 		
-		GL20.glDisableVertexAttribArray(0);
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		GL15.glDeleteBuffers(vboId);
-		
-		GL30.glBindVertexArray(0);
-		GL30.glDeleteVertexArrays(vaoId);
 	}
 }
