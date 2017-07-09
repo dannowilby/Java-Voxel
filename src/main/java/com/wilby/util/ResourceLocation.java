@@ -3,6 +3,7 @@ package com.wilby.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class ResourceLocation 
 {
@@ -58,6 +59,13 @@ public class ResourceLocation
 		}
 		
 		return src.toString();	
+	}
+
+	public static String texture(String string) 
+	{
+		String t = "" + string;
+		System.out.println(new File(t).getAbsolutePath());
+		return t;
 	}
 	
 }

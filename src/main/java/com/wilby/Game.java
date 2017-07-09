@@ -42,7 +42,7 @@ public class Game implements IGame
 	{
 		GL.createCapabilities();
 		Input.setupCallbacks(window);
-		renderer.initialise();
+		renderer.initialise(window);
 	}
 
 	@Override

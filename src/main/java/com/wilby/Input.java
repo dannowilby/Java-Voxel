@@ -1,10 +1,10 @@
 package com.wilby;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import com.wilby.display.Display;
 import com.wilby.display.Window;
+import com.wilby.model.GameItem;
 
 public class Input 
 {
